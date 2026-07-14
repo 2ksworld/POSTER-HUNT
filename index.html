@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2K's Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#eae5da;
+    --ink:#1c1a17;
+    --tape:#c94f3d;
+    --gold:#b8892b;
+    --locked:#8a8377;
+    --stub-line:#c7bfae;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ink);
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(255,255,255,0.03), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(255,255,255,0.03), transparent 40%);
+    color:var(--paper);
+    font-family:'Libre Franklin', sans-serif;
+    min-height:100vh;
+    padding:32px 16px 80px;
+  }
+  .wrap{max-width:640px;margin:0 auto;}
+  header{text-align:center;margin-bottom:28px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Anton', sans-serif;
+    font-weight:400;
+    font-size:clamp(40px,10vw,64px);
+    line-height:0.95;
+    letter-spacing:0.01em;
+    margin:0 0 4px;
+    color:var(--paper);
+    text-shadow: 3px 3px 0 var(--tape);
+  }
+  .sub{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:#b9b3a5;
+  }
+
+  .progress-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:24px 0 28px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:#b9b3a5;
+  }
+  .progress-track{
+    flex:1;
+    height:6px;
+    background:rgba(255,255,255,0.08);
+    position:relative;
+    overflow:hidden;
+  }
+  .progress-fill{
+    position:absolute;left:0;top:0;bottom:0;
+    background:var(--tape);
+    transition:width .4s ease;
+  }
+
+  .clue-list{display:flex;flex-direction:column;gap:14px;}
+
+  .clue-card{
+    position:relative;
+    padding:18px 20px 16px;
+    background:var(--paper);
+    color:var(--ink);
+    transform:rotate(-0.6deg);
+  }
+  .clue-card:nth-child(even){transform:rotate(0.5deg);}
+  .clue-card::before{
+    content:"";
+    position:absolute;
+    top:-10px;left:24px;
+    width:60px;height:20px;
+    background:rgba(201,79,61,0.85);
+    transform:rotate(-3deg);
+  }
+  .clue-card.locked{
+    background:transparent;
+    border:2px dashed rgba(234,229,218,0.25);
+    color:var(--locked);
+    transform:none;
+  }
+  .clue-card.locked::before{display:none;}
+  .clue-card.locked .label{color:rgba(234,229,218,0.4);}
+
+  .label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    margin-bottom:6px;
+    display:block;
+  }
+  .clue-text{font-size:17px;line-height:1.4;font-weight:600;}
+  .locked-text{font-size:15px;font-style:italic;}
+
+  .reward{
+    margin-top:40px;
+    padding-top:28px;
+    border-top:1px dashed rgba(234,229,218,0.3);
+    text-align:center;
+  }
+  .reward h2{
+    font-family:'Anton', sans-serif;
+    font-weight:400;
+    font-size:clamp(28px,7vw,40px);
+    color:var(--gold);
+    margin:0 0 6px;
+  }
+  .reward p{color:#b9b3a5;font-size:14px;margin:0 0 20px;}
+  iframe{width:100%;max-width:420px;margin-bottom:22px;border:none;}
+
+  .ticket-btn{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:500;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    text-decoration:none;
+    color:var(--ink);
+    background:var(--gold);
+    padding:14px 30px;
+    position:relative;
+  }
+  .ticket-btn::before,.ticket-btn::after{
+    content:"";
+    position:absolute;
+    top:0;bottom:0;
+    width:14px;
+    background:
+      radial-gradient(circle at center, var(--ink) 4px, transparent 4.5px) center/100% 16px repeat-y;
+  }
+  .ticket-btn::before{left:-7px;}
+  .ticket-btn::after{right:-7px;}
+
+  .not-found{
+    text-align:center;
+    color:#8a8377;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    margin-top:20px;
+  }
+
+  footer{
+    text-align:center;
+    margin-top:50px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:#5c574c;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Scan &middot; Collect &middot; Unlock</div>
+    <h1>2K'S ROOM</h1>
+    <div class="sub">find every poster to unlock a reward</div>
+  </header>
+
+  <div class="progress-row">
+    <span id="progress-label">0 / 0</span>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="clue-list" id="clue-list"></div>
+
+  <div class="reward" id="reward" style="display:none;">
+    <h2>ALL FOUND</h2>
+    <p>you did the work. here's your reward.</p>
+    <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay; encrypted-media" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%3Atracks%3A2360620661%3Fsecret_token%3Ds-v2cYdoDUXCf&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe>
+    <div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;margin-bottom:22px;"><a href="https://soundcloud.com/johan2k" title="johan2k" target="_blank" style="color: #cccccc; text-decoration: none;">johan2k</a> &middot; <a href="https://soundcloud.com/johan2k/lost-found-feat-skay-5amuel/s-v2cYdoDUXCf" title="LOST &amp; FOUND (FEAT. SKAY &amp; 5AMUEL)" target="_blank" style="color: #cccccc; text-decoration: none;">LOST &amp; FOUND (FEAT. SKAY &amp; 5AMUEL)</a></div>
+    <div>
+      <a class="ticket-btn" href="https://ra.co/events/2487412" target="_blank" rel="noopener">Get Tickets</a>
+    </div>
+  </div>
+
+  <footer>reset progress: clear this site's data in your browser</footer>
+</div>
+
+<script>
+  // ---- EDIT THIS SECTION FOR YOUR OWN HUNT ----
+  // Give each poster a short id (used in the QR code URL as ?p=ID)
+  // "clue" is the text revealed once that poster has been scanned.
+  const CLUES = {
+    poster1: { label: "Poster I",   clue: "Camden Town Station" },
+    poster2: { label: "Poster II",  clue: "Shoreditch Station" },
+    poster3: { label: "Poster III", clue: "Dalston Kingsland Station" },
+    poster4: { label: "Poster IV",  clue: "Old Street Station" }
+  };
+  // ---- END EDIT SECTION ----
+
+  const params = new URLSearchParams(window.location.search);
+  const scanned = params.get('p');
+
+  let found = [];
+  try { found = JSON.parse(localStorage.getItem('hunt_found') || '[]'); } catch(e) { found = []; }
+
+  if (scanned && CLUES[scanned] && !found.includes(scanned)) {
+    found.push(scanned);
+    localStorage.setItem('hunt_found', JSON.stringify(found));
+  }
+
+  const allIds = Object.keys(CLUES);
+  const allFound = allIds.length > 0 && allIds.every(id => found.includes(id));
+
+  document.getElementById('progress-label').textContent = `${found.length} / ${allIds.length}`;
+  document.getElementById('progress-fill').style.width = `${(found.length / allIds.length) * 100}%`;
+
+  const list = document.getElementById('clue-list');
+  allIds.forEach(id => {
+    const item = CLUES[id];
+    const card = document.createElement('div');
+    if (found.includes(id)) {
+      card.className = 'clue-card';
+      card.innerHTML = `<span class="label">${item.label} &mdash; found</span><div class="clue-text">${item.clue}</div>`;
+    } else {
+      card.className = 'clue-card locked';
+      card.innerHTML = `<span class="label">${item.label}</span><div class="locked-text">Not yet found. Scan this poster's code.</div>`;
+    }
+    list.appendChild(card);
+  });
+
+  if (scanned && !CLUES[scanned]) {
+    const notice = document.createElement('div');
+    notice.className = 'not-found';
+    notice.textContent = "Unrecognized code.";
+    list.parentNode.insertBefore(notice, document.getElementById('reward'));
+  }
+
+  if (allFound) {
+    document.getElementById('reward').style.display = 'block';
+  }
+</script>
+</body>
+</html>
