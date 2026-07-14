@@ -235,7 +235,7 @@
       card.innerHTML = `<span class="label">${item.label} &mdash; found</span><div class="clue-text">${item.clue}</div>`;
     } else {
       card.className = 'clue-card locked';
-      card.innerHTML = `<span class="label">${item.label}</span><div class="locked-text">Not yet found. Scan this poster's code.</div>`;
+      card.innerHTML = `<span class="label">${item.label} &mdash; not yet found</span><div class="clue-text">${item.clue}</div>`;
     }
     list.appendChild(card);
   });
